@@ -1,0 +1,7 @@
+[package]
+name = "ccll"
+version = "0.1.0"
+authors = ["Tang <out_tang_look@outlook.com>"]
+edition = "2018"
+
+[dependencies]
