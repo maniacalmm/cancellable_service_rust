@@ -66,9 +66,15 @@ pub struct Canceller {
     keep_running: Arc<AtomicBool>,
 }
 
+impl Canceller {
+    pub fn cancel(&self) {
+        self.keep_running.store(false, Ordering::SeqCst);
+    }
+}
+
 impl<E> Handle<E> {
     // what's the purpose of this?
-    pub fn Canceller(&self) -> Canceller {
+    pub fn canceller(&self) -> Canceller {
         Canceller {
             keep_running: self.keep_running.clone(),
         }

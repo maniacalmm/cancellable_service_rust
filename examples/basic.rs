@@ -1,14 +1,16 @@
 extern crate ccll;
 use ccll::Cancellable;
-use std::{net, io::{self, prelude::*}};
+use std::{net, time,io::{self, prelude::*}};
+use std::thread;
 
 struct Service(net::TcpListener);
 
 impl ccll::Cancellable for Service {
     type Error = io::Error; 
     fn for_each(&mut self) -> Result<ccll::LoopState, Self::Error> {
+        println!("in for each!");
         let mut stream = self.0.accept()?.0;
-        write!(stream, "hello!")?;
+        writeln!(stream, "hello!")?;
         Ok(ccll::LoopState::Continue)
     }
 }
@@ -22,5 +24,13 @@ impl Service {
 
 fn main() {
     let mut s = Service::new();
-    s.run();
+
+    let h = s.spawn();
+    let exit = h.canceller();
+
+    thread::spawn(move || {
+        thread::sleep(time::Duration::from_secs(10));
+        exit.cancel();
+    });
+    h.wait();
 }
